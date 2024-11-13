@@ -35,10 +35,9 @@ httpd_uri_t uri_temp = {
 #define MAX_NEW_URIS 10
 
 static struct {
-	unsigned short int curr_idx = 0;
-	const unsigned short int max_new_uris = MAX_NEW_URIS;
-	httpd_uri_t configs[MAX_NEW_URIS] = { 0 };
-} upcoming_uris_buf;
+	unsigned short int curr_idx;
+	httpd_uri_t configs[MAX_NEW_URIS];
+} upcoming_uris_buf = { 0 };
 
 int akri_server_start() {
 	if (akri_server)
@@ -93,20 +92,19 @@ int akri_set_handler_generic(const char *uri,
 			     esp_err_t (*handler)(httpd_req_t *req)) {
 	if (NULL == akri_server)
 		return -1;
-	if (!uri || !handler|| method >= HTTP_METHOD_MAX)
+	if (!uri || !handler)
 		return -1;
-	if (upcoming_uris_buf.curr_idx >= upcoming_uris_buf.max_new_uris)
+	if (upcoming_uris_buf.curr_idx >= MAX_NEW_URIS)
 		return -1;
 
-	upcoming_uris_buf.configs[upcoming_uris_buf.curr_idx] = {
-		.uri      = uri,
-		.method   = method,
-		.handler  = handler,
-		.user_ctx = NULL
-	};
+	httpd_uri_t *new_uri = &upcoming_uris_buf.configs[upcoming_uris_buf.curr_idx];
+	new_uri->uri      = uri;
+	new_uri->method   = method;
+	new_uri->handler  = handler;
+	new_uri->user_ctx = NULL;
 
-	httpd_register_uri_handler(
-			akri_server,
-			&upcoming_uris_buf.configs[upcoming_uris_buf.curr_idx++]);
+	httpd_register_uri_handler(akri_server, new_uri);
+	++upcoming_uris_buf.curr_idx;
+
 	return (int) ESP_OK;
 }
