@@ -56,3 +56,6 @@ By sending a GET request to `/info`, one can retrieve information about the devi
 
 ### `/update`
 On the other side, the update should be initialized through a POST request. More specifically, the body of the request should include the IP address of the OTA agent in the form: "ip: A.B.C.D". The handler then will extract the IP from the request and initialize a TLS (secure) connection between the device and the Agent. If the authentication succeeds, the device will receive the new firmware.
+
+### `/onboard` (FIXME)
+Currently, the `/onboard` endpoint waits for GET requests, and responds with the Attestation Certificate in PEM format. The purpose of this endpoint is to enable the onboarding process of the device. **Important!!** However, the current state is not secure at all, since the certificate is not transferred over a TLS connection, thus it could get stolen by a malicious user with the upper goal to impersonate a trusted device. Saying that, this endpoint should probably receive POST requests, containing the IP address of an external TLS server that could communicate securely with the IoT.
