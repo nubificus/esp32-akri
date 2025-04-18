@@ -34,6 +34,8 @@ int akri_set_update_handler(esp_err_t (*handler)(httpd_req_t *req));
 
 int akri_set_info_handler(esp_err_t (*handler)(httpd_req_t *req));
 
+int akri_set_onboard_handler(esp_err_t (*handler)(httpd_req_t *req));
+
 int akri_set_temp_handler(esp_err_t (*handler)(httpd_req_t *req));
 
 int akri_set_handler_generic(const char *uri,
@@ -41,3 +43,16 @@ int akri_set_handler_generic(const char *uri,
                              esp_err_t (*handler)(httpd_req_t *req));
 ```
 Make sure you have connected the device on the internet previously.
+
+## Endpoints
+
+The exported endpoints from esp32-akri are:
+ - `/info`
+ - `/onboard`
+ - `/update`
+
+### `/info`
+By sending a GET request to `/info`, one can retrieve information about the device (device type, firmware version, firmware type etc) in JSON format.
+
+### `/update`
+On the other side, the update should be initialized through a POST request. More specifically, the body of the request should include the IP address of the OTA agent in the form: "ip: A.B.C.D". The handler then will extract the IP from the request and initialize a TLS (secure) connection between the device and the Agent. If the authentication succeeds, the device will receive the new firmware.
