@@ -13,6 +13,8 @@ int akri_set_info_handler(esp_err_t (*handler)(httpd_req_t *req));
 
 int akri_set_temp_handler(esp_err_t (*handler)(httpd_req_t *req));
 
+int akri_set_onboard_handler(esp_err_t (*handler)(httpd_req_t *req));
+
 int akri_set_handler_generic(const char *uri,
 			     httpd_method_t method,
 			     esp_err_t (*handler)(httpd_req_t *req));

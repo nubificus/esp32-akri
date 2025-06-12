@@ -25,9 +25,16 @@ httpd_uri_t uri_info = {
     .user_ctx = NULL
 };
 
-/*predefined /temp uri */
+/* predefined /temp uri */
 httpd_uri_t uri_temp = {
     .uri      = "/temp",
+    .method   = HTTP_GET,
+    .user_ctx = NULL
+};
+
+/* predefined /temp uri */
+httpd_uri_t uri_onboard = {
+    .uri      = "/onboard",
     .method   = HTTP_GET,
     .user_ctx = NULL
 };
@@ -84,6 +91,15 @@ int akri_set_temp_handler(esp_err_t (*handler)(httpd_req_t *req)) {
 
 	uri_temp.handler = handler;
 	httpd_register_uri_handler(akri_server, &uri_temp);
+	return (int) ESP_OK;
+}
+
+int akri_set_onboard_handler(esp_err_t (*handler)(httpd_req_t *req)) {
+	if (NULL == akri_server || NULL == handler)
+		return -1;
+
+	uri_onboard.handler = handler;
+	httpd_register_uri_handler(akri_server, &uri_onboard);
 	return (int) ESP_OK;
 }
 
