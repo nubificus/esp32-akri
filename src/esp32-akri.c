@@ -124,3 +124,25 @@ int akri_set_handler_generic(const char *uri,
 
 	return (int) ESP_OK;
 }
+
+int akri_set_handler_generic_with_context(const char *uri,
+			     httpd_method_t method,
+			     esp_err_t (*handler)(httpd_req_t *req), void* context) {
+	if (NULL == akri_server)
+		return -1;
+	if (!uri || !handler)
+		return -1;
+	if (upcoming_uris_buf.curr_idx >= MAX_NEW_URIS)
+		return -1;
+
+	httpd_uri_t *new_uri = &upcoming_uris_buf.configs[upcoming_uris_buf.curr_idx];
+	new_uri->uri      = uri;
+	new_uri->method   = method;
+	new_uri->handler  = handler;
+	new_uri->user_ctx = context;
+
+	httpd_register_uri_handler(akri_server, new_uri);
+	++upcoming_uris_buf.curr_idx;
+
+	return (int) ESP_OK;
+}
